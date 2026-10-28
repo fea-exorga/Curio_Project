@@ -18,6 +18,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
   };
 
   res.cookie('token', token, cookieOptions);
@@ -139,9 +140,12 @@ export const login = async (req, res, next) => {
 // @desc    Logout current user / clear cookie
 // @route   POST /api/auth/logout
 export const logout = (req, res) => {
-  res.cookie('token', '', {
-    expires: new Date(Date.now() - 1000),
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('token', {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
   });
 
   res.status(200).json({
