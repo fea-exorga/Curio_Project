@@ -1,52 +1,52 @@
 # Curio --- Curiosity-Driven Social Discovery
 
-Curio is a social knowledge-discovery platform designed to make learning
-feel effortless. Users can explore interesting ideas, facts, and
-educational content in short sessions, discover new topics, and revisit
-content they find useful.
+Curio is a social knowledge-discovery platform designed to make learning feel effortless. Users can explore interesting ideas, facts, and educational content in short sessions, discover new topics, and revisit content they find useful.
 
-> **Project status:** Feature availability depends on the current
-> repository implementation and configured services. Verify each
-> workflow before describing it as production-ready.
+## Project links
+
+- **Live application:** [https://curio-project.vercel.app](https://curio-project.vercel.app)
+- **GitHub repository:** [https://github.com/fea-exorga/Curio_Project](https://github.com/fea-exorga/Curio_Project)
+- **Demo video:** [https://drive.google.com/file/d/1BhLxgoj1nPrw6UXL6meUPE1QRzGD-c6F/view?usp=sharing](#demo-video)
+
+## Problem and solution
+
+Interesting, useful knowledge is scattered across long articles and busy social feeds. Curio gives curious readers a focused way to discover bite-sized explanations, explore topics, and return to ideas they want to remember.
+
+## Who Curio is for
+
+Curio is for students, lifelong learners, and readers who want to discover useful ideas in short sessions. Administrators can curate and publish content for the community.
 
 ## Features
 
--   Knowledge feed for bite-sized educational and discovery-oriented
-    content.
--   Topic/category-based content discovery.
--   Authentication and account access.
--   Post management through the existing admin/content-management
-    workflow.
--   Optional source name and URL attribution for posts.
--   User profiles; profile editing depends on the current
-    implementation.
--   Photo posts, multi-image carousels, and short-form video/Reels are
-    part of the planned content experience. Confirm uploads, storage,
-    APIs, and feed rendering are all connected before treating each
-    format as complete.
--   Responsive web interface.
+- Personalized and following feeds for published posts.
+- Explore search for posts and people, with category filters.
+- Photo posts, multi-image carousels, and short video Reels.
+- Post titles, captions, categories, and optional source links.
+- User profiles with editable display name, bio, website, and avatar.
+- Username and display-name search, with follow and unfollow actions.
+- Saved posts, private collections, and collection-based organization.
+- Admin tools to create, edit, publish, unpublish, and delete posts.
+- Admin-managed categories available throughout the application.
+- Server-side Cloudinary uploads for post media and profile photos.
+- Responsive layouts, loading states, empty states, and error feedback.
 
-## Technology Stack
+## Technology stack
 
-  -----------------------------------------------------------------------
-  Layer                               Technology
-  ----------------------------------- -----------------------------------
-  Frontend                            React, Vite, JavaScript
+- **Frontend:** React 18, Vite, React Router, Tailwind CSS, Axios
+- **Backend:** Node.js, Express 5
+- **Database:** MongoDB with Mongoose
+- **Authentication:** JWT bearer tokens, HTTP-only cookies, bcrypt password hashing
+- **Media storage:** Cloudinary
+- **Deployment:** Vercel frontend, Render API, MongoDB Atlas database
 
-  Backend                             Node.js, Express
+## Architecture
 
-  Database                            MongoDB with Mongoose
+The React application in `client/` calls the Express REST API in `server/`. The API authenticates users, enforces admin and ownership permissions, and stores users, posts, categories, follows, interactions, saved posts, and collections in MongoDB. Cloudinary stores uploaded image and video files; MongoDB stores their URLs and metadata.
 
-  Authentication                      JWT-based authentication
-
-  Media storage                       Cloudinary environment
-                                      configuration is supported;
-                                      credentials/integration may be
-                                      required
-
-  API                                 REST
-  -----------------------------------------------------------------------
-
+```text
+Browser → Vercel React app → Render Express API → MongoDB Atlas
+                                      └────────→ Cloudinary media
+```
 ## Project Structure
 
 ``` text
@@ -67,173 +67,77 @@ curio/
 
 Exact folders may evolve as development continues.
 
-## Prerequisites
+## Run locally
 
--   Node.js version supported by the project's package files
--   npm
--   MongoDB running locally or a MongoDB Atlas connection string
--   Git
--   Media-storage credentials if image/video uploads are enabled
+### Requirements
 
-## Getting Started
+- Node.js 20 or later and npm
+- A local MongoDB instance or MongoDB Atlas database
+- Cloudinary credentials to use media uploads
 
-### 1. Clone the repository
+### 1. Configure the API
 
-``` bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd curio
-```
+Copy `server/.env.example` to `server/.env`. Set `MONGODB_URI` and replace the example `JWT_SECRET` with a private random value. Keep the development `FRONTEND_URL` as `http://localhost:5173` for local use.
 
-Replace the placeholder URL with your repository's actual URL.
+The Cloudinary variables can stay empty while developing other features. Upload endpoints will report that media uploads are not configured until valid credentials are added.
 
-### 2. Install backend dependencies
+From the project root:
 
-``` bash
+```bash
 cd server
 npm install
-```
-
-### 3. Configure environment variables
-
-Create the backend environment file expected by the code, commonly
-`server/.env`. Use the example below as a reference and confirm variable
-names against the server implementation.
-
-``` dotenv
-PORT=5001
-MONGODB_URI=mongodb://127.0.0.1:27017/curio
-JWT_SECRET=replace_with_a_long_random_secret
-FRONTEND_URL=http://localhost:5173
-NODE_ENV=development
-
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-```
-
-  Variable                  Purpose
-  ------------------------- ---------------------------------------------------
-  `PORT`                    Express server port
-  `MONGODB_URI`             MongoDB connection string
-  `JWT_SECRET`              Secret used for authentication tokens
-  `FRONTEND_URL`            Frontend origin for CORS or related configuration
-  `NODE_ENV`                Runtime environment
-  `CLOUDINARY_CLOUD_NAME`   Cloudinary cloud name, if used
-  `CLOUDINARY_API_KEY`      Cloudinary API key, if used
-  `CLOUDINARY_API_SECRET`   Cloudinary API secret, if used
-
-Never use an example JWT secret in production. Keep real credentials in
-local environment files or the deployment provider's secret manager.
-Never commit `.env` files or expose secrets in frontend code.
-
-### 4. Start MongoDB
-
-For local development, make sure MongoDB is running. The example URI
-uses a local database named `curio`. For MongoDB Atlas, use the Atlas
-connection string and configure database permissions and network access.
-
-### 5. Start the backend
-
-From `server/`, use a start script that exists in `server/package.json`.
-Check available scripts with:
-
-``` bash
-npm run
-```
-
-Common scripts may be:
-
-``` bash
 npm run dev
 ```
 
-or:
+The API normally listens on `http://localhost:5001`. Check the terminal if another port is configured.
 
-``` bash
-npm start
-```
+### 2. Configure and run the client
 
-The example configuration uses port `5001`; check terminal output if
-your port differs.
-
-### 6. Install and start the frontend
+Copy `client/.env.example` to `client/.env`. The default `VITE_API_URL` is `http://localhost:5001`.
 
 Open a second terminal:
 
-``` bash
+```bash
 cd client
 npm install
 npm run dev
 ```
 
-Vite commonly serves the frontend at `http://localhost:5173`. Use the
-actual URL shown in the terminal.
+Open the Vite URL printed in the terminal, normally `http://localhost:5173`.
 
-## Seed Data
+### Optional development seed data
 
-A seed script exists at `server/src/seed/seed.js`. From the `server/`
-directory, run:
+The seed script is for development databases only and refuses to run when `NODE_ENV=production`. Create and promote an admin account first, then run:
 
-``` bash
+```bash
+cd server
 npm run seed
 ```
 
-This requires the `seed` script to be defined in `server/package.json`
-and a working database connection. Review the script before running it
-against any database containing important data. Use development seed
-data locally; do not rely on sample credentials in production.
+The script adds example posts and skips titles that already exist. Do not run it against a production database.
 
+## Environment variables
 
-## Media Uploads
+### API (`server/.env` or Render environment)
 
-Photo, carousel, and video functionality requires the frontend, backend
-API, database metadata, and media storage to work together.
+| Variable | Purpose |
+| --- | --- |
+| `PORT` | API port. Render supplies this automatically; local default is `5001`. |
+| `MONGODB_URI` | MongoDB connection string. Required in production. |
+| `JWT_SECRET` | Private JWT signing secret. Required; production value must be at least 32 characters and must not be an example placeholder. |
+| `FRONTEND_URL` | Exact frontend origin allowed by CORS. In production, use the HTTPS Vercel origin with no route or query string. |
+| `NODE_ENV` | Use `development` locally and `production` on Render. |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name; required with the next two variables to enable uploads. |
+| `CLOUDINARY_API_KEY` | Cloudinary API key; keep it on the server. |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret; keep it private on the server. |
 
-Before testing uploads, verify that:
+### Client (`client/.env` or Vercel environment)
 
--   Media-storage credentials are configured on the backend.
--   Upload endpoints validate file types and file sizes.
--   Uploaded media URLs and metadata are saved in MongoDB.
--   Failed uploads show useful errors and do not create broken posts.
--   Protected content-management endpoints check permissions.
+| Variable | Purpose |
+| --- | --- |
+| `VITE_API_URL` | API origin, such as `https://your-api.onrender.com`. Do not append `/api`; the client adds that path. |
 
-Do not store large image/video files directly in MongoDB. Store files
-with a suitable storage provider and save their metadata and URLs in the
-database. If media credentials are empty, uploads may not work until
-storage is configured.
-
-## Development Checks
-
-Inspect the scripts available in each package:
-
-``` bash
-# Run inside server/
-npm run
-
-# Run inside client/
-npm run
-```
-
-A typical Vite production build is:
-
-``` bash
-cd client
-npm run build
-```
-
-Before merging changes, manually verify:
-
-1.  Registration and login.
-2.  Feed loading and post details.
-3.  Supported content creation and admin management.
-4.  Category filters and source links, if enabled.
-5.  Profile editing, if implemented.
-6.  Photo, carousel, and Reel uploads after configuring storage.
-7.  Mobile and desktop layouts.
-8.  Backend authorization for admin-only operations.
-
-Record any tests that could not run because a database, service, or
-credential was unavailable.
+Never put MongoDB credentials, JWT secrets, or the Cloudinary API secret in Vercel or in any `VITE_*` variable. Only the public API origin belongs in the client environment.
 
 ## Deployment
 
@@ -256,6 +160,10 @@ backend host, MongoDB Atlas, and a media-storage provider.
 
 Do not assume deployment is complete until the deployed frontend
 successfully communicates with the backend and database.
+
+## Demo video
+
+**Google Drive link:** https://drive.google.com/file/d/1BhLxgoj1nPrw6UXL6meUPE1QRzGD-c6F/view?usp=sharing
 
 ## Security Notes
 
